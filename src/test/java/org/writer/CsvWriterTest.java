@@ -1,5 +1,6 @@
 package org.writer;
 
+import org.data.DataGenerator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -103,6 +104,23 @@ public class CsvWriterTest {
         assertEquals("Anton", personsFromCsv.get(0).getFirstName(),
                 "Имя первого в списке должно быть Anton!");
     }
+
+    @Test
+    public void sizeListPersonFromFile_MustBeEqual_GeneratedSizeList() {
+        File csvOutputFile = new File(CSV_FILE_NAME);
+        int count = 10;
+        List<Person> persons = DataGenerator.generatePersons(count);
+        Writable writer = new CsvWriter();
+        writer.writeToFile(persons, CSV_FILE_NAME);
+        PersonsReader pr = new PersonsReader();
+        List<Person> personsFromCsv = pr.readFromCsv(CSV_FILE_NAME);
+        int expectedCount = 10;
+        assertTrue(csvOutputFile.exists(), "Файл " + CSV_FILE_NAME + " должен быть создан!");
+        assertEquals(expectedCount,
+                personsFromCsv.size(),
+                "Количество людей в файле должно быть " + expectedCount + " !");
+    }
+
 
     @AfterEach
     void delete() {
