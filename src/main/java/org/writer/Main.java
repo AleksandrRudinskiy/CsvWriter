@@ -1,6 +1,5 @@
 package org.writer;
 
-import org.reader.PersonsReader;
 import org.writer.model.Months;
 import org.writer.model.Person;
 import org.writer.model.Student;
@@ -43,9 +42,5 @@ public class Main {
         students.add(firstStudent);
         students.add(secondStudent);
         writer.writeToFile(students, "students_data.csv");
-
-        PersonsReader pr = new PersonsReader();
-        List<Person> personsFromCsv = pr.readFromCsv(PERSONS_FILE_NAME);
-        personsFromCsv.forEach(System.out::println);
     }
 }

@@ -8,14 +8,16 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- **Этот класс формирует отчет в файл в формате csv**
- **@author Александр Рудинский**
+ * *Этот класс формирует отчет в файл в формате csv**
+ * *@author Александр Рудинский**
  **/
 public class CsvWriter implements Writable {
     private final String FIELD_SEPARATOR = ";";
+
     /**
      * Метод создает csv файл с коллекцией данных
-     * @param data -> коллекция данных для отчета
+     *
+     * @param data     -> коллекция данных для отчета
      * @param fileName -> имя файла отчета
      */
     @Override
@@ -53,7 +55,7 @@ public class CsvWriter implements Writable {
         Class<?> itemsClass = item.getClass();
         List<Field> fields = Arrays.asList(itemsClass.getDeclaredFields());
         StringBuilder header = new StringBuilder();
-        header.append(fields.get(0));
+        header.append(fields.get(0).getName());
         for (int i = 1; i < fields.size(); i++) {
             header.append(FIELD_SEPARATOR);
             header.append(fields.get(i).getName());
