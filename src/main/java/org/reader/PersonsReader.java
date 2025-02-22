@@ -31,13 +31,10 @@ public class PersonsReader {
         try {
             FileReader fileReader = new FileReader(fileName);
             CsvToBean beanParser = new CsvToBeanBuilder<>(fileReader).withType(Person.class).build();
-
            persons = beanParser.parse();
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
         return persons;
     }
 }

@@ -28,6 +28,7 @@ public class Main {
         List<Person> persons = new ArrayList<>();
         persons.add(firstPerson);
         persons.add(secondPerson);
+
         Writable writer = new CsvWriter();
         writer.writeToFile(persons, PERSONS_FILE_NAME);
         Student firstStudent = Student.builder()
