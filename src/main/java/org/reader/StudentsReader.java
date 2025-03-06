@@ -1,5 +1,6 @@
 package org.reader;
 
+import org.exception.NullFileNameException;
 import org.writer.model.Student;
 
 import java.io.BufferedReader;
@@ -12,8 +13,12 @@ import java.util.stream.Collectors;
 
 public class StudentsReader {
     private final static String FIELD_SEPARATOR = ";";
+    private final static String SCORES_SEPARATOR = ",";
 
     public List<Student> readFromCsv(String fileName) {
+        if (fileName == null) {
+            throw new NullFileNameException("Имя файла не должно быть null!");
+        }
         List<Student> students = new ArrayList<>();
         File csvFile = new File(fileName);
         try (BufferedReader in = new BufferedReader(new FileReader(csvFile))) {
@@ -34,7 +39,6 @@ public class StudentsReader {
      * @ return -> коллекция оценок студента
      */
     private List<String> parseScores(String line) {
-
-        return List.of(line.split(" "));
+        return List.of(line.split(SCORES_SEPARATOR));
     }
 }

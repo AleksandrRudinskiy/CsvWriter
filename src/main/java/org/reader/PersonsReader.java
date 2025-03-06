@@ -1,18 +1,26 @@
 package org.reader;
 
-import com.opencsv.bean.CsvToBean;
-import com.opencsv.bean.CsvToBeanBuilder;
+import lombok.extern.slf4j.Slf4j;
+import org.exception.NullFileNameException;
 import org.writer.model.Months;
 import org.writer.model.Person;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class PersonsReader {
-    private final String FIELD_SEPARATOR = ";";
+    private final static String FIELD_SEPARATOR = ";";
+
     public List<Person> readFromCsv(String fileName) {
+        if (fileName == null) {
+            throw new NullFileNameException("Имя файла не должно быть null!");
+        }
         List<Person> persons = new ArrayList<>();
         File csvFile = new File(fileName);
         try (BufferedReader in = new BufferedReader(new FileReader(csvFile))) {
@@ -22,18 +30,6 @@ public class PersonsReader {
             }).collect(Collectors.toList());
         } catch (IOException exception) {
             System.out.println("файл " + fileName + " не найден");
-        }
-        return persons;
-    }
-
-    public List<Person> readWithAnnotationFromCsv(String fileName) {
-        List<Person> persons = new ArrayList<>();
-        try {
-            FileReader fileReader = new FileReader(fileName);
-            CsvToBean beanParser = new CsvToBeanBuilder<>(fileReader).withType(Person.class).build();
-           persons = beanParser.parse();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         }
         return persons;
     }

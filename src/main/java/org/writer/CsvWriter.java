@@ -1,6 +1,9 @@
 package org.writer;
 
+import lombok.extern.slf4j.Slf4j;
 import org.exception.EmptyDataException;
+import org.exception.NullFieldException;
+import org.writer.model.CSVField;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +16,7 @@ import java.util.List;
  * *Этот класс формирует отчет в файл в формате csv**
  * *@author Александр Рудинский**
  **/
+@Slf4j
 public class CsvWriter implements Writable {
     private final static String FIELD_SEPARATOR = ";";
 
@@ -34,21 +38,28 @@ public class CsvWriter implements Writable {
                     List<Field> allFields = Arrays.asList(itemsClass.getDeclaredFields());
                     Field firstField = allFields.get(0);
                     if (firstField != null) {
-                        firstField.setAccessible(true);
-                        makeLine(stringBuilder, firstField, item);
+                        if (firstField.isAnnotationPresent(CSVField.class)) {
+                            firstField.setAccessible(true);
+                            log.info("value of the first field is: {}", firstField.get(item));
+                            makeLine(stringBuilder, firstField, item);
+                        }
                     }
                     for (int i = 1; i < allFields.size(); i++) {
                         stringBuilder.append(FIELD_SEPARATOR);
                         Field currentField = allFields.get(i);
                         if (currentField != null) {
-                            currentField.setAccessible(true);
-                            makeLine(stringBuilder, currentField, item);
+                            if (currentField.isAnnotationPresent(CSVField.class)) {
+                                currentField.setAccessible(true);
+                                makeLine(stringBuilder, currentField, item);
+                            }
                         }
                     }
                     pw.println(stringBuilder);
                 }
             } catch (IOException exception) {
                 System.out.println(exception.getMessage());
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
             }
         } else {
             throw new EmptyDataException("Данные не должны быть пустыми!");
@@ -72,20 +83,31 @@ public class CsvWriter implements Writable {
     }
 
     private String listToString(String line) {
-        String line1 = line.replaceAll(",", "");
-        String line2 = line1.replaceAll("\\[", "");
-        return line2.replaceAll("]", "");
+
+        return line.replaceAll("\\[", "")
+                .replaceAll("]", "");
     }
 
     private void makeLine(StringBuilder stringBuilder, Field field, Object item) {
         try {
+            if (field.get(item) == null) {
+                throw new NullFieldException("Значение поля не должно быть null!");
+            }
             if (isTypeList(field)) {
                 stringBuilder.append(listToString(field.get(item).toString()));
             } else {
+                check(field, item);
                 stringBuilder.append(field.get(item));
             }
         } catch (IllegalAccessException exception) {
             System.out.println("Поле класса не прочитано!");
+        }
+    }
+
+    private void check(Field field, Object o) throws IllegalAccessException {
+        Object value = field.get(o);
+        if (value == null) {
+            throw new NullFieldException("Значение поля не должно быть null!");
         }
     }
 }
